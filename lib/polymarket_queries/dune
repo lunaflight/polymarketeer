@@ -1,0 +1,5 @@
+(library
+ (name polymarket_queries)
+ (libraries async cohttp-async core polymarket_types yojson)
+ (preprocess
+  (pps ppx_jane)))

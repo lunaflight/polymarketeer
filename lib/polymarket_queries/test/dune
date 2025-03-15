@@ -1,0 +1,6 @@
+(library
+ (name test_polymarket_queries)
+ (libraries async core polymarket_queries polymarket_types)
+ (inline_tests)
+ (preprocess
+  (pps ppx_jane)))
