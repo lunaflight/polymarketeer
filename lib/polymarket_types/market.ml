@@ -1,10 +1,15 @@
 open! Core
 open! Async
 
-type t = { question : string } [@@deriving fields ~getters, sexp]
+type t =
+  { question : string
+  ; tokens : Token.t list
+  }
+[@@deriving fields ~getters, sexp]
 
-let of_json json ~question_key =
-  { question =
-      json |> Yojson.Basic.Util.member question_key |> Yojson.Basic.to_string
+let of_json json ~question_key ~tokens:(tokens_key, json_to_tokens) =
+  let open Yojson.Basic.Util in
+  { question = json |> member question_key |> to_string
+  ; tokens = json |> member tokens_key |> json_to_tokens
   }
 ;;

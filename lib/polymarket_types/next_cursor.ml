@@ -26,6 +26,4 @@ let of_string str =
   else Next str
 ;;
 
-let of_json ~key json =
-  json |> Yojson.Basic.Util.member key |> Yojson.Basic.to_string |> of_string
-;;
+let of_json json = json |> Yojson.Basic.to_string |> of_string

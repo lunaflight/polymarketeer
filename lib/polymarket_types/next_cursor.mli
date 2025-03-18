@@ -24,6 +24,5 @@ val of_string : string -> t
 (** Converts the cursor to a string that is passable as a request parameter. *)
 val to_string : t -> string
 
-(** Fetches the [next_cursor] from a field with the name [key] in a
-    [Yojson.Basic.t] dictionary. *)
-val of_json : key:string -> Yojson.Basic.t -> t
+(** Interprets a string as the type [t]. *)
+val of_json : Yojson.Basic.t -> t
