@@ -3,7 +3,7 @@ open Polymarket_queries
 open Polymarket_types
 
 let sampling_markets_uri_and_print ~next_cursor =
-  Sampling_markets.For_testing.uri ~next_cursor |> Uri.to_string |> print_string
+  Endpoint.sampling_markets ~next_cursor |> Endpoint.to_string |> print_string
 ;;
 
 let%expect_test "normal next cursor = url ok" =
@@ -21,4 +21,18 @@ let%expect_test "starting next cursor = url either has empty next_cursor or no \
   =
   sampling_markets_uri_and_print ~next_cursor:Next_cursor.start;
   [%expect {| https://clob.polymarket.com/sampling-markets?next_cursor= |}]
+;;
+
+let price_uri_and_print ~token_id ~side =
+  Endpoint.price ~token_id ~side |> Endpoint.to_string |> print_string
+;;
+
+let%expect_test "buy = url ok" =
+  price_uri_and_print ~token_id:"id" ~side:Side.Buy;
+  [%expect {| https://clob.polymarket.com/price?token_id=id&side=buy |}]
+;;
+
+let%expect_test "sell = url ok" =
+  price_uri_and_print ~token_id:"id" ~side:Side.Sell;
+  [%expect {| https://clob.polymarket.com/price?token_id=id&side=sell |}]
 ;;

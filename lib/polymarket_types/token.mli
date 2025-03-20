@@ -3,6 +3,8 @@ open! Async
 
 type t [@@deriving sexp]
 
+val token_id : t -> string
+
 (** Fetches and interprets a [Token] from a [Yojson.Basic.t]
     dictionary.
 

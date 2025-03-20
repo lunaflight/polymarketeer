@@ -15,7 +15,7 @@ type t =
   ; price : Price.t
   ; winner : bool
   }
-[@@deriving sexp]
+[@@deriving fields ~getters, sexp]
 
 let of_json
   json
