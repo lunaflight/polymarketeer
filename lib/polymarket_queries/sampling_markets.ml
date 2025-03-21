@@ -17,18 +17,31 @@ let query () =
         Yojson.Basic.Util.member "next_cursor" json |> Next_cursor.of_json
       in
       let markets =
-        Yojson.Basic.Util.convert_each
-          (Market.of_json
-             ~question_key:"question"
-             ~tokens:
-               ( "tokens"
-               , Yojson.Basic.Util.convert_each
-                   (Token.of_json
-                      ~token_id_key:"token_id"
-                      ~outcome_key:"outcome"
-                      ~price:("price", Price.of_json)
-                      ~winner_key:"winner") ))
-          (Yojson.Basic.Util.member "data" json)
+        json
+        |> Yojson.Basic.Util.member "data"
+        |> Yojson.Basic.Util.convert_each
+             (Market.of_json
+                ~closed_key:"closed"
+                ~condition_id_key:"condition_id"
+                ~description_key:"description"
+                ~end_date:
+                  ( "end_date_iso"
+                  , fun json ->
+                      Yojson.Basic.Util.to_string json
+                      |> Time_float_unix.of_string )
+                ~icon:
+                  ( "icon"
+                  , fun json ->
+                      Yojson.Basic.Util.to_string json |> Uri.of_string )
+                ~question_key:"question"
+                ~tokens:
+                  ( "tokens"
+                  , Yojson.Basic.Util.convert_each
+                      (Token.of_json
+                         ~token_id_key:"token_id"
+                         ~outcome_key:"outcome"
+                         ~price:("price", Price.of_json)
+                         ~winner_key:"winner") ))
       in
       let%map tl = get_all_markets ~next_cursor in
       List.append markets tl)

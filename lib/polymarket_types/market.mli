@@ -5,7 +5,13 @@ open! Async
 
     See: https://docs.polymarket.com/#get-markets. *)
 type t =
-  { question : string
+  { closed : bool
+  ; condition_id : string
+  ; description : string
+  ; (* This is an [option] as it could be [null] in responses. *)
+    end_date : Time_float_unix.t option
+  ; icon : Uri_sexp.t
+  ; question : string
   ; tokens : Token.t list
   }
 [@@deriving fields ~getters, sexp]
@@ -20,6 +26,11 @@ type t =
     type. *)
 val of_json
   :  Yojson.Basic.t
+  -> closed_key:string
+  -> condition_id_key:string
+  -> description_key:string
+  -> end_date:string * (Yojson.Basic.t -> Time_float.t)
+  -> icon:string * (Yojson.Basic.t -> Uri.t)
   -> question_key:string
   -> tokens:string * (Yojson.Basic.t -> Token.t list)
   -> t

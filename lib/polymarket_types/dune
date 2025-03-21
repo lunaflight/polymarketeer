@@ -1,6 +1,6 @@
 (library
  (name polymarket_types)
- (libraries async core yojson)
+ (libraries async core uri-sexp yojson)
  (inline_tests)
  (preprocess
   (pps ppx_jane)))
