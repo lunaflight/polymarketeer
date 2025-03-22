@@ -1,0 +1,6 @@
+(library
+ (name test_ledger)
+ (libraries async core ledger polymarket_types)
+ (inline_tests)
+ (preprocess
+  (pps ppx_jane)))

@@ -1,6 +1,15 @@
 open! Core
 open! Async
 
+module Id = struct
+  module T = struct
+    type t = string [@@deriving compare, sexp]
+  end
+
+  include T
+  include Comparable.Make (T)
+end
+
 (* TODO-someday: The existence of [price] and [winner] in a [Token] is not
    guaranteed by the CLOB API as shown here:
    https://docs.polymarket.com/#get-sampling-markets.
@@ -10,9 +19,9 @@ open! Async
    or [end_date_iso] field in a [Market] and then inspecting the prices to see
    who won. *)
 type t =
-  { token_id : string
+  { token_id : Id.t
   ; outcome : string
-  ; price : Price.t
+  ; price : Dollar.t
   ; winner : bool
   }
 [@@deriving fields ~getters, sexp]

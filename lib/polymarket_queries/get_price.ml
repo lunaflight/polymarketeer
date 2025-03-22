@@ -7,5 +7,5 @@ let query ~token ~side =
     Endpoint.send_request
       (Endpoint.price ~token_id:(Token.token_id token) ~side)
   in
-  Price.of_json json
+  Dollar.of_json json
 ;;

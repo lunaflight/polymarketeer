@@ -1,6 +1,12 @@
 open! Core
 open! Async
 
+module Id : sig
+  type t = string [@@deriving compare, sexp]
+
+  include Comparable.S with type t := t
+end
+
 type t [@@deriving sexp]
 
 val token_id : t -> string
@@ -17,6 +23,6 @@ val of_json
   :  Yojson.Basic.t
   -> token_id_key:string
   -> outcome_key:string
-  -> price:string * (Yojson.Basic.t -> Price.t)
+  -> price:string * (Yojson.Basic.t -> Dollar.t)
   -> winner_key:string
   -> t
