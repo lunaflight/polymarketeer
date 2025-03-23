@@ -21,7 +21,12 @@ module T = struct
     |> Float.to_string_hum ~decimals
   ;;
 
-  let of_json json = json |> Yojson.Basic.Util.to_float |> of_float
+  let of_json_float json = json |> Yojson.Basic.Util.to_float |> of_float
+
+  let of_json_string json =
+    json |> Yojson.Basic.Util.to_string |> Float.of_string |> of_float
+  ;;
+
   let zero = of_float 0.
   let ( + ) = Int.( + )
   let ( - ) = Int.( - )

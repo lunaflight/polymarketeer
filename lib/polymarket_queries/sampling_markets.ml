@@ -40,7 +40,7 @@ let query () =
                       (Token.of_json
                          ~token_id_key:"token_id"
                          ~outcome_key:"outcome"
-                         ~price:("price", Dollar.of_json)
+                         ~price:("price", Dollar.of_json_float)
                          ~winner_key:"winner") ))
       in
       let%map tl = get_all_markets ~next_cursor in

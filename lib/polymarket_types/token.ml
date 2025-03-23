@@ -3,7 +3,9 @@ open! Async
 
 module Id = struct
   module T = struct
-    type t = string [@@deriving compare, sexp]
+    type t = string [@@deriving compare, of_string, sexp]
+
+    let arg_type = Command.Arg_type.create of_string
   end
 
   include T

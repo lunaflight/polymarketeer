@@ -2,7 +2,10 @@ open! Core
 open! Async
 
 module Id : sig
+  (* TODO-soon: Make this type private for compile-time safety. *)
   type t = string [@@deriving compare, sexp]
+
+  val arg_type : t Command.Arg_type.t
 
   include Comparable.S with type t := t
 end

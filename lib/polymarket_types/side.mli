@@ -5,6 +5,9 @@ type t =
   | Buy
   | Sell
 
+val usage_hint : string
+val arg_type : t Command.Arg_type.t
+
 (** Converts it to a string that is passable as a request parameter. *)
 val to_string : t -> string
 

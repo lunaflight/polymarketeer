@@ -1,4 +1,4 @@
 (executable
- (name client)
- (public_name client)
- (libraries async client_app core))
+ (name cli)
+ (public_name cli)
+ (libraries app async core))

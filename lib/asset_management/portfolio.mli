@@ -3,13 +3,13 @@ open! Async
 open Polymarket_types
 
 (** This type encapsulates a persons owned money and their "assets" in the form
-    of token ids. *)
+    of Token IDs. *)
 type t [@@deriving sexp]
 
 val money_owned : t -> Dollar.t
 val token_ids_owned : t -> int Token.Id.Map.t
 
-(** Initialises a portfolio with no token ids and [money_owned] dollars to begin
+(** Initialises a portfolio with no Token IDs and [money_owned] dollars to begin
     with. *)
 val init : money_owned:Dollar.t -> t
 

@@ -16,4 +16,5 @@ This project uses `Core` heavily.
 4. Run `dune build` to build the project to check that it is successful.
 
 ## Running the project
-1. Run `dune exec -- ./bin/client.exe`.
+1. Run `dune exec -- ./bin/cli.exe`. Use `-help` to
+   guide you through the command.
