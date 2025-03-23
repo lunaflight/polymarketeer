@@ -12,6 +12,7 @@ val to_cents_hum : t -> decimals:int -> string
 (** Interprets a float as the type [t]. *)
 val of_json : Yojson.Basic.t -> t
 
+val zero : t
 val ( + ) : t -> t -> t
 val ( - ) : t -> t -> t
 val ( * ) : t -> int -> t

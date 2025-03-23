@@ -2,22 +2,6 @@ open! Core
 open! Async
 open Polymarket_types
 
-module Transaction_failure = struct
-  module Not_enough_money = struct
-    type t =
-      { cost : Dollar.t
-      ; money_owned : Dollar.t
-      }
-    [@@deriving sexp]
-  end
-
-  type t =
-    | Not_enough_money of Not_enough_money.t
-    | Not_enough_tokens of Token.Id.t
-    | Token_not_owned of Token.Id.t
-  [@@deriving sexp]
-end
-
 type t =
   { token_ids_owned : int Token.Id.Map.t
   ; money_owned : Dollar.t
@@ -33,7 +17,8 @@ let add { token_ids_owned; money_owned } ~money =
 ;;
 
 let remove { token_ids_owned; money_owned } ~money =
-  { token_ids_owned; money_owned = Dollar.(money_owned - money) }
+  (* Attempts to remove the money, capping it at zero. *)
+  { token_ids_owned; money_owned = Dollar.(max zero (money_owned - money)) }
 ;;
 
 let init ~money_owned = add empty ~money:money_owned

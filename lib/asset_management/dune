@@ -1,5 +1,5 @@
 (library
- (name ledger)
+ (name asset_management)
  (libraries async core polymarket_types)
  (inline_tests)
  (preprocess
