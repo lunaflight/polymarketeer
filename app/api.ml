@@ -30,12 +30,8 @@ let sampling_markets =
          print_s [%sexp (market : Market.t)]))
 ;;
 
-let api =
+let cmd =
   Command.group
     ~summary:"Request APIs of Polymarket"
     [ "get-price", get_price; "sampling-markets", sampling_markets ]
-;;
-
-let main =
-  Command.group ~summary:"Main entrypoint of Polymarketeer" [ "api", api ]
 ;;
