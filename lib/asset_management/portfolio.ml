@@ -51,17 +51,20 @@ let buy { token_ids_owned; money_owned } ~token_id ~count ~price =
       }
 ;;
 
-(* TODO-soon: If 0 of a token is owned, it should be removed from tracking. *)
 let sell { token_ids_owned; money_owned } ~token_id ~count ~price =
   match Map.find token_ids_owned token_id with
   | None -> Error (Transaction_failure.Token_not_owned token_id)
   | Some existing_count ->
     if existing_count < count
     then Error (Transaction_failure.Not_enough_tokens token_id)
-    else
+    else (
+      let token_ids_owned =
+        if existing_count = count
+        then Map.remove token_ids_owned token_id
+        else Map.set token_ids_owned ~key:token_id ~data:(existing_count - count)
+      in
       Ok
-        { token_ids_owned =
-            Map.set token_ids_owned ~key:token_id ~data:(existing_count - count)
+        { token_ids_owned
         ; money_owned = Dollar.(money_owned + (price * count))
-        }
+        })
 ;;

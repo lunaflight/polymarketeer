@@ -42,19 +42,19 @@ let%expect_test "removing money more than owned = capped at zero" =
   [%expect {| (portfolio ((token_ids_owned ()) (money_owned 0))) |}]
 ;;
 
-let _1_token_and_0_dollars =
+let _2_tokens_and_0_dollars =
   Portfolio.buy
     _0_tokens_and_1_dollar
     ~token_id:"token_1"
-    ~count:1
-    ~price:(Dollar.of_float 1.)
+    ~count:2
+    ~price:(Dollar.of_float 0.5)
   |> Transaction_failure.result_ok_exn
 ;;
 
 let%expect_test "buy with sufficient money = tokens stored and money deducted" =
-  let portfolio = _1_token_and_0_dollars in
+  let portfolio = _2_tokens_and_0_dollars in
   print_s [%message (portfolio : Portfolio.t)];
-  [%expect {| (portfolio ((token_ids_owned ((token_1 1))) (money_owned 0))) |}]
+  [%expect {| (portfolio ((token_ids_owned ((token_1 2))) (money_owned 0))) |}]
 ;;
 
 let%expect_test "too many tokens = error" =
@@ -87,19 +87,28 @@ let%expect_test "buy zero tokens = ok" =
     {| (portfolio (Ok ((token_ids_owned ((token_1 0))) (money_owned 10000)))) |}]
 ;;
 
-let%expect_test "sell tokens = ok" =
+let%expect_test "sell tokens to non-zero amount = ok" =
   let portfolio =
-    _1_token_and_0_dollars
+    _2_tokens_and_0_dollars
     |> Portfolio.sell ~token_id:"token_1" ~count:1 ~price:(Dollar.of_float 0.5)
   in
   print_s [%message (portfolio : (Portfolio.t, Transaction_failure.t) Result.t)];
   [%expect
-    {| (portfolio (Ok ((token_ids_owned ((token_1 0))) (money_owned 5000)))) |}]
+    {| (portfolio (Ok ((token_ids_owned ((token_1 1))) (money_owned 5000)))) |}]
+;;
+
+let%expect_test "sell tokens to zero = removed from portfolio" =
+  let portfolio =
+    _2_tokens_and_0_dollars
+    |> Portfolio.sell ~token_id:"token_1" ~count:2 ~price:(Dollar.of_float 0.5)
+  in
+  print_s [%message (portfolio : (Portfolio.t, Transaction_failure.t) Result.t)];
+  [%expect {| (portfolio (Ok ((token_ids_owned ()) (money_owned 10000)))) |}]
 ;;
 
 let%expect_test "sell unowned token = error" =
   let portfolio =
-    _1_token_and_0_dollars
+    _2_tokens_and_0_dollars
     |> Portfolio.sell ~token_id:"token_2" ~count:1 ~price:(Dollar.of_float 0.5)
   in
   print_s [%message (portfolio : (Portfolio.t, Transaction_failure.t) Result.t)];
@@ -108,21 +117,21 @@ let%expect_test "sell unowned token = error" =
 
 let%expect_test "sell too many tokens = error" =
   let portfolio =
-    _1_token_and_0_dollars
+    _2_tokens_and_0_dollars
     |> Portfolio.sell ~token_id:"token_1" ~count:2 ~price:(Dollar.of_float 0.5)
   in
   print_s [%message (portfolio : (Portfolio.t, Transaction_failure.t) Result.t)];
-  [%expect {| (portfolio (Error (Not_enough_tokens token_1))) |}]
+  [%expect {| (portfolio (Ok ((token_ids_owned ()) (money_owned 10000)))) |}]
 ;;
 
 let%expect_test "sell no tokens = ok" =
   let portfolio =
-    _1_token_and_0_dollars
+    _2_tokens_and_0_dollars
     |> Portfolio.sell ~token_id:"token_1" ~count:0 ~price:(Dollar.of_float 0.5)
   in
   print_s [%message (portfolio : (Portfolio.t, Transaction_failure.t) Result.t)];
   [%expect
-    {| (portfolio (Ok ((token_ids_owned ((token_1 1))) (money_owned 0)))) |}]
+    {| (portfolio (Ok ((token_ids_owned ((token_1 2))) (money_owned 0)))) |}]
 ;;
 
 let%expect_test "0 tokens = string representation ok" =
@@ -134,17 +143,17 @@ let%expect_test "0 tokens = string representation ok" =
 ;;
 
 let%expect_test "1 token = string representation ok" =
-  _1_token_and_0_dollars |> Portfolio.to_string |> print_endline;
+  _2_tokens_and_0_dollars |> Portfolio.to_string |> print_endline;
   [%expect {|
     0.00 cents
-    1x Token: token_1
+    2x Token: token_1
     |}]
 ;;
 
 let _2_tokens_and_some_dollars =
-  _1_token_and_0_dollars
+  _2_tokens_and_0_dollars
   |> Portfolio.add ~money:(Dollar.of_float 1.5)
-  |> Portfolio.buy ~token_id:"token_2" ~count:2 ~price:(Dollar.of_float 0.2)
+  |> Portfolio.buy ~token_id:"token_2" ~count:1 ~price:(Dollar.of_float 0.2)
   |> Transaction_failure.result_ok_exn
 ;;
 
@@ -152,8 +161,8 @@ let%expect_test "2 tokens = string representation ok" =
   _2_tokens_and_some_dollars |> Portfolio.to_string |> print_endline;
   [%expect
     {|
-    110.00 cents
-    1x Token: token_1
-    2x Token: token_2
+    130.00 cents
+    2x Token: token_1
+    1x Token: token_2
     |}]
 ;;

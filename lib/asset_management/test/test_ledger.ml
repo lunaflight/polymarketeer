@@ -153,10 +153,7 @@ let%expect_test "selling tokens = ok" =
   in
   print_s [%message (ledger : (Ledger.t, Transaction_failure.t) Result.t)];
   [%expect
-    {|
-    (ledger
-     (Ok ((person_1 ((token_ids_owned ((token_1 0))) (money_owned 5000))))))
-    |}]
+    {| (ledger (Ok ((person_1 ((token_ids_owned ()) (money_owned 5000)))))) |}]
 ;;
 
 let%expect_test "selling tokens for unknown person = error" =
