@@ -1,4 +1,4 @@
 open! Core
 open! Async
 
-val cmd : Command.t
+val entrypoint : Command.t

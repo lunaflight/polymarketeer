@@ -6,6 +6,7 @@ module Id : sig
   type t = string [@@deriving compare, sexp]
 
   val arg_type : t Command.Arg_type.t
+  val usage_hint : string
 
   include Comparable.S with type t := t
 end

@@ -3,6 +3,8 @@ open! Async
 
 type t [@@deriving sexp]
 
+val arg_type : t Command.Arg_type.t
+val usage_hint : string
 val of_float : float -> t
 
 (** Returns a string representing the number of cents, rounded to [decimals]

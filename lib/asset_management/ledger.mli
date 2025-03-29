@@ -26,6 +26,8 @@ val remove
   -> money:Dollar.t
   -> (t, Transaction_failure.t) Result.t
 
+val remove_exn : t -> person:Person.t -> money:Dollar.t -> t
+
 (** Buys tokens for [person]. Refer to [Portfolio.add] for details.
     Returns a failure if [person] does not exist. *)
 val buy
@@ -36,6 +38,14 @@ val buy
   -> price:Dollar.t
   -> (t, Transaction_failure.t) Result.t
 
+val buy_exn
+  :  t
+  -> person:Person.t
+  -> token_id:Token.Id.t
+  -> count:int
+  -> price:Dollar.t
+  -> t
+
 (** Sells tokens for [person]. Refer to [Portfolio.sell] for details.
     Returns a failure if [person] does not exist. *)
 val sell
@@ -45,3 +55,21 @@ val sell
   -> count:int
   -> price:Dollar.t
   -> (t, Transaction_failure.t) Result.t
+
+val sell_exn
+  :  t
+  -> person:Person.t
+  -> token_id:Token.Id.t
+  -> count:int
+  -> price:Dollar.t
+  -> t
+
+(** Reads the contents of [filename], and passes it through [f], writing
+    the result back to [filename].
+
+    For a malformed [filename], read [from_file_or_empty] for fallback
+    details. *)
+val modify_file
+  :  filename:Filename.t
+  -> f:(t -> t Deferred.t)
+  -> unit Deferred.t

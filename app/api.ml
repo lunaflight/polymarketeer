@@ -7,14 +7,19 @@ let get_price =
   Command.async
     ~summary:"Get the price of a Token ID"
     (let%map_open.Command token_id = anon ("token_id" %: Token.Id.arg_type)
-     and side =
+     and side_of_dealer =
        flag
          "-s"
          (required Side.arg_type)
-         ~doc:[%string "SIDE %{Side.usage_hint}"]
+         ~doc:
+           (String.concat
+              ~sep:" "
+              [ Side.usage_hint
+              ; "Refers to the side of the dealer to pair with"
+              ])
      in
      fun () ->
-       let%map price = Get_price.query ~token_id ~side in
+       let%map price = Get_price.query ~token_id ~side_of_dealer in
        print_s [%sexp (price : Dollar.t)])
 ;;
 

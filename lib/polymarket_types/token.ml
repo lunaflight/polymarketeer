@@ -6,6 +6,7 @@ module Id = struct
     type t = string [@@deriving compare, of_string, sexp]
 
     let arg_type = Command.Arg_type.create of_string
+    let usage_hint = "STRING token id"
   end
 
   include T

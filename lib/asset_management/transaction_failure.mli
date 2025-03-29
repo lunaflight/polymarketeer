@@ -15,3 +15,5 @@ type t =
   | Person_does_not_exist of Person.t
   | Token_not_owned of Token.Id.t
 [@@deriving sexp]
+
+val to_error : t -> Error.t

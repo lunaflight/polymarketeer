@@ -14,6 +14,12 @@ module T = struct
     |> Float.to_int
   ;;
 
+  let arg_type =
+    Command.Arg_type.create (fun string -> Float.of_string string |> of_float)
+  ;;
+
+  let usage_hint = "FLOAT amount in dollars"
+
   let to_cents_hum t ~decimals =
     (* Dividing by 1e[magnitude_factor] gives you back dollars.
        Multiplying by 1e2 gives you cents. Hence, the following. *)

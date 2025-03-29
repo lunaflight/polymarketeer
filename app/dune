@@ -1,5 +1,5 @@
 (library
  (name app)
- (libraries async core polymarket_queries)
+ (libraries asset_management async core polymarket_queries)
  (preprocess
   (pps ppx_jane)))

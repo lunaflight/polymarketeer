@@ -16,3 +16,5 @@ type t =
   | Person_does_not_exist of Person.t
   | Token_not_owned of Token.Id.t
 [@@deriving sexp]
+
+let to_error t = Error.create_s [%message "Transaction failure" (t : t)]
