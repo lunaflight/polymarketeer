@@ -4,7 +4,7 @@ open Polymarket_types
 
 (** This type is an abstraction over a mapping between people and their
     portfolios. *)
-type t [@@deriving sexp]
+type t [@@deriving sexp, to_string]
 
 val empty : t
 
@@ -63,6 +63,11 @@ val sell_exn
   -> count:int
   -> price:Dollar.t
   -> t
+
+(** Reads the contents of [filename] as a sexp of a ledger and returns it.
+    If the data is malformed or the [filename] does not exist, an error is
+    returned. *)
+val from_file : filename:Filename.t -> t Or_error.t Deferred.t
 
 (** Reads the contents of [filename], and passes it through [f], writing
     the result back to [filename].

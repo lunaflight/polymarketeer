@@ -4,7 +4,7 @@ open Polymarket_types
 
 (** This type encapsulates a persons owned money and their "assets" in the form
     of Token IDs. *)
-type t [@@deriving sexp]
+type t [@@deriving sexp, to_string]
 
 val money_owned : t -> Dollar.t
 val token_ids_owned : t -> int Token.Id.Map.t

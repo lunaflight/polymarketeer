@@ -3,11 +3,14 @@ open! Async
 
 type t = Portfolio.t Person.Map.t [@@deriving sexp]
 
-(** TODO-soon: Add a string representation for this so "view" can be made into
-    a command. *)
-
-let of_transaction_failure_exn result =
-  result |> Result.map_error ~f:Transaction_failure.to_error |> Or_error.ok_exn
+let to_string t =
+  if Map.is_empty t
+  then "No people in ledger"
+  else
+    Map.to_alist t
+    |> List.map ~f:(fun (person, portfolio) ->
+      [%string "%{person#Person}'s Portfolio:\n%{portfolio#Portfolio}"])
+    |> String.concat ~sep:"\n\n"
 ;;
 
 let portfolio t ~person =
@@ -29,7 +32,7 @@ let remove t ~person ~money =
 ;;
 
 let remove_exn t ~person ~money =
-  remove t ~person ~money |> of_transaction_failure_exn
+  remove t ~person ~money |> Transaction_failure.result_ok_exn
 ;;
 
 let update_portfolio t ~person ~f ~token_id ~count ~price =
@@ -43,7 +46,7 @@ let buy t ~person ~token_id ~count ~price =
 ;;
 
 let buy_exn t ~person ~token_id ~count ~price =
-  buy t ~person ~token_id ~count ~price |> of_transaction_failure_exn
+  buy t ~person ~token_id ~count ~price |> Transaction_failure.result_ok_exn
 ;;
 
 let sell t ~person ~token_id ~count ~price =
@@ -51,7 +54,7 @@ let sell t ~person ~token_id ~count ~price =
 ;;
 
 let sell_exn t ~person ~token_id ~count ~price =
-  sell t ~person ~token_id ~count ~price |> of_transaction_failure_exn
+  sell t ~person ~token_id ~count ~price |> Transaction_failure.result_ok_exn
 ;;
 
 let to_file t ~filename =
@@ -59,21 +62,21 @@ let to_file t ~filename =
     sexp_of_t t |> Writer.write_sexp writer |> Deferred.return)
 ;;
 
-let from_file_or_empty ~filename =
-  match%map
-    Monitor.try_with_or_error (fun () ->
-      match%map
-        Reader.with_file filename ~f:(fun reader -> Reader.read_sexp reader)
-      with
-      | `Ok sexp -> t_of_sexp sexp
-      | `Eof -> empty)
-  with
-  | Ok t -> t
-  | Error _ -> empty
+let from_file ~filename =
+  Monitor.try_with_or_error (fun () ->
+    match%map
+      Reader.with_file filename ~f:(fun reader -> Reader.read_sexp reader)
+    with
+    | `Ok sexp -> t_of_sexp sexp
+    | `Eof -> empty)
 ;;
 
 let modify_file ~filename ~f =
-  let%bind ledger = from_file_or_empty ~filename in
+  let%bind ledger =
+    match%map from_file ~filename with
+    | Ok t -> t
+    | Error _ -> empty
+  in
   let%bind new_ledger = f ledger in
   to_file new_ledger ~filename
 ;;

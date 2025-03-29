@@ -16,4 +16,4 @@ type t =
   | Token_not_owned of Token.Id.t
 [@@deriving sexp]
 
-val to_error : t -> Error.t
+val result_ok_exn : ('a, t) Result.t -> 'a

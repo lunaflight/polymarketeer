@@ -58,8 +58,19 @@ let sell =
     ~side_of_dealer:Side.Buy
 ;;
 
+let view =
+  Command.async
+    ~summary:"View state of ledger"
+    (let%map_open.Command () = Command.Param.return () in
+     fun () ->
+       let%map ledger =
+         Ledger.from_file ~filename |> Deferred.Or_error.ok_exn
+       in
+       Ledger.to_string ledger |> print_endline)
+;;
+
 let cmd =
   Command.group
     ~summary:"Commands to interact with the persistent ledger"
-    [ "admin", admin_cmd; "buy", buy; "sell", sell ]
+    [ "admin", admin_cmd; "buy", buy; "sell", sell; "view", view ]
 ;;

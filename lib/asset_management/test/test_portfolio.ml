@@ -48,8 +48,7 @@ let _1_token_and_0_dollars =
     ~token_id:"token_1"
     ~count:1
     ~price:(Dollar.of_float 1.)
-  |> Result.ok
-  |> Option.value_exn
+  |> Transaction_failure.result_ok_exn
 ;;
 
 let%expect_test "buy with sufficient money = tokens stored and money deducted" =
@@ -124,4 +123,37 @@ let%expect_test "sell no tokens = ok" =
   print_s [%message (portfolio : (Portfolio.t, Transaction_failure.t) Result.t)];
   [%expect
     {| (portfolio (Ok ((token_ids_owned ((token_1 1))) (money_owned 0)))) |}]
+;;
+
+let%expect_test "0 tokens = string representation ok" =
+  _0_tokens_and_1_dollar |> Portfolio.to_string |> print_endline;
+  [%expect {|
+    100.00 cents
+    No tokens owned
+    |}]
+;;
+
+let%expect_test "1 token = string representation ok" =
+  _1_token_and_0_dollars |> Portfolio.to_string |> print_endline;
+  [%expect {|
+    0.00 cents
+    1x Token: token_1
+    |}]
+;;
+
+let _2_tokens_and_some_dollars =
+  _1_token_and_0_dollars
+  |> Portfolio.add ~money:(Dollar.of_float 1.5)
+  |> Portfolio.buy ~token_id:"token_2" ~count:2 ~price:(Dollar.of_float 0.2)
+  |> Transaction_failure.result_ok_exn
+;;
+
+let%expect_test "2 tokens = string representation ok" =
+  _2_tokens_and_some_dollars |> Portfolio.to_string |> print_endline;
+  [%expect
+    {|
+    110.00 cents
+    1x Token: token_1
+    2x Token: token_2
+    |}]
 ;;

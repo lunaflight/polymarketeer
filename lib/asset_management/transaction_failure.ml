@@ -18,3 +18,7 @@ type t =
 [@@deriving sexp]
 
 let to_error t = Error.create_s [%message "Transaction failure" (t : t)]
+
+let result_ok_exn result =
+  Result.map_error result ~f:to_error |> Or_error.ok_exn
+;;

@@ -8,6 +8,20 @@ type t =
   }
 [@@deriving fields ~getters, sexp]
 
+let to_string { token_ids_owned; money_owned } =
+  let token_ids =
+    if Map.is_empty token_ids_owned
+    then "No tokens owned"
+    else
+      Map.to_alist token_ids_owned
+      |> List.map ~f:(fun (token_id, count) ->
+        [%string "%{count#Int}x Token: %{token_id}"])
+      |> String.concat ~sep:"\n"
+  in
+  let cents = Dollar.to_cents_hum money_owned ~decimals:2 in
+  [%string "%{cents} cents\n%{token_ids}"]
+;;
+
 let empty =
   { token_ids_owned = Token.Id.Map.empty; money_owned = Dollar.of_float 0. }
 ;;
@@ -37,6 +51,7 @@ let buy { token_ids_owned; money_owned } ~token_id ~count ~price =
       }
 ;;
 
+(* TODO-soon: If 0 of a token is owned, it should be removed from tracking. *)
 let sell { token_ids_owned; money_owned } ~token_id ~count ~price =
   match Map.find token_ids_owned token_id with
   | None -> Error (Transaction_failure.Token_not_owned token_id)
