@@ -19,6 +19,12 @@ let price ~token_id ~side =
     [ "token_id", token_id; "side", Side.to_string side ]
 ;;
 
+let book ~token_id =
+  Uri.add_query_param'
+    (Uri.with_path clob_endpoint "book")
+    ("token_id", token_id)
+;;
+
 let send_request t =
   let%bind _response, body = Cohttp_async.Client.get t in
   let%map json_str = Cohttp_async.Body.to_string body in

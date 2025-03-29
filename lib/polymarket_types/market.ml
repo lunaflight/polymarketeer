@@ -1,9 +1,13 @@
 open! Core
 open! Async
 
+module Id = struct
+  type t = string [@@deriving sexp]
+end
+
 type t =
   { closed : bool
-  ; condition_id : string
+  ; condition_id : Id.t
   ; description : string
   ; end_date : Time_float_unix.t option
   ; icon : Uri_sexp.t

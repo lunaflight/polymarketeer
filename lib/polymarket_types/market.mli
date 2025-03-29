@@ -1,12 +1,18 @@
 open! Core
 open! Async
 
+module Id : sig
+  (** This is represents a unique ID for a market. It is often called a
+      condition ID in the Polymarket documentation. *)
+  type t = string [@@deriving sexp]
+end
+
 (** This type encapsulates a [Market].
 
     See: https://docs.polymarket.com/#get-markets. *)
 type t =
   { closed : bool
-  ; condition_id : string
+  ; condition_id : Id.t
   ; description : string
   ; (* This is an [option] as it could be [null] in responses. *)
     end_date : Time_float_unix.t option

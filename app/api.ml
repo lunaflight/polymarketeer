@@ -3,6 +3,15 @@ open! Async
 open Polymarket_queries
 open Polymarket_types
 
+let get_book =
+  Command.async
+    ~summary:"Get the order book summary with a Token ID"
+    (let%map_open.Command token_id = anon ("token_id" %: Token.Id.arg_type) in
+     fun () ->
+       let%map orderbook = Get_book.query ~token_id in
+       print_s [%sexp (orderbook : Orderbook.t)])
+;;
+
 let get_price =
   Command.async
     ~summary:"Get the price of a Token ID"
@@ -38,5 +47,8 @@ let sampling_markets =
 let cmd =
   Command.group
     ~summary:"Request APIs of Polymarket"
-    [ "get-price", get_price; "sampling-markets", sampling_markets ]
+    [ "get-book", get_book
+    ; "get-price", get_price
+    ; "sampling-markets", sampling_markets
+    ]
 ;;

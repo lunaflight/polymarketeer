@@ -38,7 +38,9 @@ let change_token_cmd ~summary ~f ~side_of_dealer =
      and count = flag "-c" (required int) ~doc:"INT number of tokens" in
      fun () ->
        Ledger.modify_file ~filename ~f:(fun ledger ->
-         let%map price = Polymarket_queries.Get_price.query ~token_id ~side_of_dealer in
+         let%map price =
+           Polymarket_queries.Get_price.query ~token_id ~side_of_dealer
+         in
          f ledger ~person ~token_id ~count ~price))
 ;;
 
