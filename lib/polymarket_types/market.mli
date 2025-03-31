@@ -5,6 +5,9 @@ module Id : sig
   (** This is represents a unique ID for a market. It is often called a
       condition ID in the Polymarket documentation. *)
   type t = string [@@deriving sexp]
+
+  val arg_type : string Command.Arg_type.t
+  val usage_hint : string
 end
 
 (** This type encapsulates a [Market].

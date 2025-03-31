@@ -2,7 +2,10 @@ open! Core
 open! Async
 
 module Id = struct
-  type t = string [@@deriving sexp]
+  type t = string [@@deriving of_string, sexp]
+
+  let arg_type = Command.Arg_type.create of_string
+  let usage_hint = "STRING condition id"
 end
 
 type t =

@@ -12,6 +12,17 @@ let get_book =
        print_s [%sexp (orderbook : Orderbook.t)])
 ;;
 
+let get_market =
+  Command.async
+    ~summary:"Get the market with a Condition ID"
+    (let%map_open.Command condition_id =
+       anon ("condition_id" %: Market.Id.arg_type)
+     in
+     fun () ->
+       let%map market = Get_market.query ~condition_id in
+       print_s [%sexp (market : Market.t)])
+;;
+
 let get_price =
   Command.async
     ~summary:"Get the price of a Token ID"
@@ -48,6 +59,7 @@ let cmd =
   Command.group
     ~summary:"Request APIs of Polymarket"
     [ "get-book", get_book
+    ; "get-market", get_market
     ; "get-price", get_price
     ; "sampling-markets", sampling_markets
     ]
