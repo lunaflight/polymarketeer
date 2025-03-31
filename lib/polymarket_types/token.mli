@@ -12,7 +12,8 @@ end
 
 type t [@@deriving sexp]
 
-val token_id : t -> string
+val token_id : t -> Id.t
+val outcome : t -> string
 
 (** Fetches and interprets a [Token] from a [Yojson.Basic.t]
     dictionary.

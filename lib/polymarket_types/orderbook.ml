@@ -24,7 +24,7 @@ type t =
   ; bids : Order_summary.t list
   ; asks : Order_summary.t list
   }
-[@@deriving sexp]
+[@@deriving fields ~getters, sexp]
 
 let of_json
   json

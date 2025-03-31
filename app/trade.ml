@@ -61,12 +61,23 @@ let sell =
 let view =
   Command.async
     ~summary:"View state of ledger"
-    (let%map_open.Command () = Command.Param.return () in
+    (let%map_open.Command verbose =
+       flag_optional_with_default_doc
+         "-v"
+         bool
+         sexp_of_bool
+         ~default:false
+         ~doc:"BOOL get extra information"
+     in
      fun () ->
-       let%map ledger =
+       let%bind ledger =
          Ledger.from_file ~filename |> Deferred.Or_error.ok_exn
        in
-       Ledger.to_string ledger |> print_endline)
+       let info_of_token_id =
+         Option.some_if verbose Polymarket_queries.Unofficial.info_of_token_id
+       in
+       let%map ledger_string = Ledger.to_string ledger ~info_of_token_id in
+       print_endline ledger_string)
 ;;
 
 let cmd =

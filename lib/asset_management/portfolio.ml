@@ -8,15 +8,27 @@ type t =
   }
 [@@deriving fields ~getters, sexp]
 
-let to_string { token_ids_owned; money_owned } =
-  let token_ids =
+let to_string { token_ids_owned; money_owned } ~info_of_token_id =
+  let%map token_ids =
     if Map.is_empty token_ids_owned
-    then "No tokens owned"
-    else
-      Map.to_alist token_ids_owned
-      |> List.map ~f:(fun (token_id, count) ->
-        [%string "%{count#Int}x Token: %{token_id}"])
-      |> String.concat ~sep:"\n"
+    then Deferred.return "No tokens owned"
+    else (
+      let%map token_strings =
+        Map.to_alist token_ids_owned
+        |> Deferred.List.map
+             ~how:(`Max_concurrent_jobs 16)
+             ~f:(fun (token_id, count) ->
+               match info_of_token_id with
+               | None ->
+                 Deferred.return [%string "%{count#Int}x Token: %{token_id}"]
+               | Some info_of_token_id ->
+                 let%map price, question, outcome = info_of_token_id token_id in
+                 let cents = Dollar.to_cents_hum price ~decimals:2 in
+                 [%string
+                   "%{count#Int}x Token: %{question} (%{outcome}) Current \
+                    Price: %{cents} cents"])
+      in
+      String.concat token_strings ~sep:"\n")
   in
   let cents = Dollar.to_cents_hum money_owned ~decimals:2 in
   [%string "%{cents} cents\n%{token_ids}"]

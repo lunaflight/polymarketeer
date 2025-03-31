@@ -1,4 +1,5 @@
 open! Core
+open! Async
 open Asset_management
 open Polymarket_types
 
@@ -12,7 +13,8 @@ let _1_person_no_tokens =
 let%expect_test "initial ledger = ok" =
   print_s [%message (_1_person_no_tokens : Ledger.t)];
   [%expect
-    {| (_1_person_no_tokens ((person_1 ((token_ids_owned ()) (money_owned 10000))))) |}]
+    {| (_1_person_no_tokens ((person_1 ((token_ids_owned ()) (money_owned 10000))))) |}];
+  Deferred.return ()
 ;;
 
 let%expect_test "getting portfolio = ok" =
@@ -20,7 +22,8 @@ let%expect_test "getting portfolio = ok" =
     Ledger.portfolio _1_person_no_tokens ~person:(Person.of_string "person_1")
   in
   print_s [%message (portfolio : (Portfolio.t, Transaction_failure.t) Result.t)];
-  [%expect {| (portfolio (Ok ((token_ids_owned ()) (money_owned 10000)))) |}]
+  [%expect {| (portfolio (Ok ((token_ids_owned ()) (money_owned 10000)))) |}];
+  Deferred.return ()
 ;;
 
 let%expect_test "getting portfolio of unknown person = error" =
@@ -28,7 +31,8 @@ let%expect_test "getting portfolio of unknown person = error" =
     Ledger.portfolio _1_person_no_tokens ~person:(Person.of_string "person_2")
   in
   print_s [%message (portfolio : (Portfolio.t, Transaction_failure.t) Result.t)];
-  [%expect {| (portfolio (Error (Person_does_not_exist person_2))) |}]
+  [%expect {| (portfolio (Error (Person_does_not_exist person_2))) |}];
+  Deferred.return ()
 ;;
 
 let%expect_test "adding money = ok" =
@@ -40,7 +44,8 @@ let%expect_test "adding money = ok" =
   in
   print_s [%message (ledger : Ledger.t)];
   [%expect
-    {| (ledger ((person_1 ((token_ids_owned ()) (money_owned 20000))))) |}]
+    {| (ledger ((person_1 ((token_ids_owned ()) (money_owned 20000))))) |}];
+  Deferred.return ()
 ;;
 
 let%expect_test "adding money to new person = ok" =
@@ -56,7 +61,8 @@ let%expect_test "adding money to new person = ok" =
     (ledger
      ((person_1 ((token_ids_owned ()) (money_owned 10000)))
       (person_2 ((token_ids_owned ()) (money_owned 10000)))))
-    |}]
+    |}];
+  Deferred.return ()
 ;;
 
 let%expect_test "removing owned money = ok" =
@@ -68,7 +74,8 @@ let%expect_test "removing owned money = ok" =
   in
   print_s [%message (ledger : (Ledger.t, Transaction_failure.t) Result.t)];
   [%expect
-    {| (ledger (Ok ((person_1 ((token_ids_owned ()) (money_owned 5000)))))) |}]
+    {| (ledger (Ok ((person_1 ((token_ids_owned ()) (money_owned 5000)))))) |}];
+  Deferred.return ()
 ;;
 
 let%expect_test "removing money to zero = ok" =
@@ -80,7 +87,8 @@ let%expect_test "removing money to zero = ok" =
   in
   print_s [%message (ledger : (Ledger.t, Transaction_failure.t) Result.t)];
   [%expect
-    {| (ledger (Ok ((person_1 ((token_ids_owned ()) (money_owned 0)))))) |}]
+    {| (ledger (Ok ((person_1 ((token_ids_owned ()) (money_owned 0)))))) |}];
+  Deferred.return ()
 ;;
 
 let%expect_test "removing more money than owned = ok" =
@@ -92,7 +100,8 @@ let%expect_test "removing more money than owned = ok" =
   in
   print_s [%message (ledger : (Ledger.t, Transaction_failure.t) Result.t)];
   [%expect
-    {| (ledger (Ok ((person_1 ((token_ids_owned ()) (money_owned 0)))))) |}]
+    {| (ledger (Ok ((person_1 ((token_ids_owned ()) (money_owned 0)))))) |}];
+  Deferred.return ()
 ;;
 
 let%expect_test "removing money to unknown person = error" =
@@ -103,7 +112,8 @@ let%expect_test "removing money to unknown person = error" =
       ~money:(Dollar.of_float 1.)
   in
   print_s [%message (ledger : (Ledger.t, Transaction_failure.t) Result.t)];
-  [%expect {| (ledger (Error (Person_does_not_exist person_2))) |}]
+  [%expect {| (ledger (Error (Person_does_not_exist person_2))) |}];
+  Deferred.return ()
 ;;
 
 let _1_person_with_tokens =
@@ -124,7 +134,8 @@ let%expect_test "buying tokens = ok" =
     {|
     (_1_person_with_tokens
      ((person_1 ((token_ids_owned ((token_1 1))) (money_owned 0)))))
-    |}]
+    |}];
+  Deferred.return ()
 ;;
 
 let%expect_test "buying tokens for unknown person = error" =
@@ -137,7 +148,8 @@ let%expect_test "buying tokens for unknown person = error" =
       ~count:1
   in
   print_s [%message (ledger : (Ledger.t, Transaction_failure.t) Result.t)];
-  [%expect {| (ledger (Error (Person_does_not_exist person_2))) |}]
+  [%expect {| (ledger (Error (Person_does_not_exist person_2))) |}];
+  Deferred.return ()
 ;;
 
 (* No further testing is done, as [test_portfolio.ml] handles the underlying
@@ -153,7 +165,8 @@ let%expect_test "selling tokens = ok" =
   in
   print_s [%message (ledger : (Ledger.t, Transaction_failure.t) Result.t)];
   [%expect
-    {| (ledger (Ok ((person_1 ((token_ids_owned ()) (money_owned 5000)))))) |}]
+    {| (ledger (Ok ((person_1 ((token_ids_owned ()) (money_owned 5000)))))) |}];
+  Deferred.return ()
 ;;
 
 let%expect_test "selling tokens for unknown person = error" =
@@ -166,16 +179,24 @@ let%expect_test "selling tokens for unknown person = error" =
       ~count:1
   in
   print_s [%message (ledger : (Ledger.t, Transaction_failure.t) Result.t)];
-  [%expect {| (ledger (Error (Person_does_not_exist person_2))) |}]
+  [%expect {| (ledger (Error (Person_does_not_exist person_2))) |}];
+  Deferred.return ()
+;;
+
+(* [info_of_token_id] is not provided, as [test_portfolio.ml] handles the
+   underlying operations. This parameter is only used by the underlying
+   [Portfolio]. Hence, we do not need to test the [Some] execution path. *)
+let print_ledger ledger =
+  Ledger.to_string ledger ~info_of_token_id:None >>| print_endline
 ;;
 
 let%expect_test "empty ledger = string representation ok" =
-  Ledger.empty |> Ledger.to_string |> print_endline;
+  let%map () = print_ledger Ledger.empty in
   [%expect {| No people in ledger |}]
 ;;
 
 let%expect_test "ledger with 1 person = string representation ok" =
-  _1_person_with_tokens |> Ledger.to_string |> print_endline;
+  let%map () = print_ledger _1_person_with_tokens in
   [%expect
     {|
     person_1's Portfolio:
@@ -192,7 +213,7 @@ let _2_people_with_tokens =
 ;;
 
 let%expect_test "ledger with 2 people = string representation ok" =
-  _2_people_with_tokens |> Ledger.to_string |> print_endline;
+  let%map () = print_ledger _2_people_with_tokens in
   [%expect
     {|
     person_1's Portfolio:

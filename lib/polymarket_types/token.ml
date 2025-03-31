@@ -4,13 +4,13 @@ open! Async
 module Id = struct
   module T = struct
     type t = string [@@deriving compare, of_string, sexp]
-
-    let arg_type = Command.Arg_type.create of_string
-    let usage_hint = "STRING token id"
   end
 
   include T
   include Comparable.Make (T)
+
+  let arg_type = Command.Arg_type.create of_string
+  let usage_hint = "STRING token id"
 end
 
 (* TODO-someday: The existence of [price] and [winner] in a [Token] is not

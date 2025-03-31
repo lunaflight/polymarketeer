@@ -4,7 +4,16 @@ open Polymarket_types
 
 (** This type is an abstraction over a mapping between people and their
     portfolios. *)
-type t [@@deriving sexp, to_string]
+type t [@@deriving sexp]
+
+(** Returns a string representation of a ledger.
+
+    For information about the [info_of_token_id] parameter, see [portfolio.mli]. *)
+val to_string
+  :  t
+  -> info_of_token_id:
+       (Token.Id.t -> (Dollar.t * string * string) Deferred.t) option
+  -> string Deferred.t
 
 val empty : t
 

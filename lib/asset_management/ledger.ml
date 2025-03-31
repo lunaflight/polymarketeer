@@ -3,14 +3,21 @@ open! Async
 
 type t = Portfolio.t Person.Map.t [@@deriving sexp]
 
-let to_string t =
+let to_string t ~info_of_token_id =
   if Map.is_empty t
-  then "No people in ledger"
-  else
-    Map.to_alist t
-    |> List.map ~f:(fun (person, portfolio) ->
-      [%string "%{person#Person}'s Portfolio:\n%{portfolio#Portfolio}"])
-    |> String.concat ~sep:"\n\n"
+  then Deferred.return "No people in ledger"
+  else (
+    let%map portfolio_strings =
+      Map.to_alist t
+      |> Deferred.List.map
+           ~how:(`Max_concurrent_jobs 16)
+           ~f:(fun (person, portfolio) ->
+             let%map portfolio =
+               Portfolio.to_string portfolio ~info_of_token_id
+             in
+             [%string "%{person#Person}'s Portfolio:\n%{portfolio}"])
+    in
+    String.concat portfolio_strings ~sep:"\n\n")
 ;;
 
 let portfolio t ~person =
