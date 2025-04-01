@@ -43,11 +43,7 @@ let get_market ~condition_id =
     ~tokens:
       ( "tokens"
       , Yojson.Basic.Util.convert_each
-          (Token.of_json
-             ~token_id_key:"token_id"
-             ~outcome_key:"outcome"
-             ~price:("price", Dollar.of_json_float)
-             ~winner_key:"winner") )
+          (Token.of_json ~token_id_key:"token_id" ~outcome_key:"outcome") )
 ;;
 
 let get_price ~token_id ~side_of_dealer =
@@ -94,9 +90,7 @@ let sampling_markets () =
                   , Yojson.Basic.Util.convert_each
                       (Token.of_json
                          ~token_id_key:"token_id"
-                         ~outcome_key:"outcome"
-                         ~price:("price", Dollar.of_json_float)
-                         ~winner_key:"winner") ))
+                         ~outcome_key:"outcome") ))
       in
       let%map tl = get_all_markets ~next_cursor in
       List.append markets tl)
