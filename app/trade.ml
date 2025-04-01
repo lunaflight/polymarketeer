@@ -39,7 +39,7 @@ let change_token_cmd ~summary ~f ~side_of_dealer =
      fun () ->
        Ledger.modify_file ~filename ~f:(fun ledger ->
          let%map price =
-           Polymarket_queries.Get_price.query ~token_id ~side_of_dealer
+           Polymarket_queries.Clob.get_price ~token_id ~side_of_dealer
          in
          f ledger ~person ~token_id ~count ~price))
 ;;
@@ -69,7 +69,7 @@ let view =
          Ledger.from_file ~filename |> Deferred.Or_error.ok_exn
        in
        let info_of_token_id =
-         Option.some_if verbose Polymarket_queries.Unofficial.info_of_token_id
+         Option.some_if verbose Polymarket_queries.Stitched.info_of_token_id
        in
        let%map ledger_string = Ledger.to_string ledger ~info_of_token_id in
        print_endline ledger_string)

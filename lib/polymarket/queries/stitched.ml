@@ -5,10 +5,10 @@ open Polymarket_types
 let info_of_token_id token_id =
   let%map price, market =
     Deferred.both
-      (Get_price.query ~token_id ~side_of_dealer:Side.Buy)
-      (let%bind orderbook = Get_book.query ~token_id in
+      (Clob.get_price ~token_id ~side_of_dealer:Side.Buy)
+      (let%bind orderbook = Clob.get_book ~token_id in
        let condition_id = Orderbook.market orderbook in
-       Get_market.query ~condition_id)
+       Clob.get_market ~condition_id)
   in
   let question = Market.question market in
   let outcome =

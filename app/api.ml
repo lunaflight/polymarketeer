@@ -8,7 +8,7 @@ let get_book =
     ~summary:"Get the order book summary with a Token ID"
     (let%map_open.Command token_id = anon ("token_id" %: Token.Id.arg_type) in
      fun () ->
-       let%map orderbook = Get_book.query ~token_id in
+       let%map orderbook = Clob.get_book ~token_id in
        print_s [%sexp (orderbook : Orderbook.t)])
 ;;
 
@@ -19,7 +19,7 @@ let get_market =
        anon ("condition_id" %: Market.Id.arg_type)
      in
      fun () ->
-       let%map market = Get_market.query ~condition_id in
+       let%map market = Clob.get_market ~condition_id in
        print_s [%sexp (market : Market.t)])
 ;;
 
@@ -39,7 +39,7 @@ let get_price =
               ])
      in
      fun () ->
-       let%map price = Get_price.query ~token_id ~side_of_dealer in
+       let%map price = Clob.get_price ~token_id ~side_of_dealer in
        print_s [%sexp (price : Dollar.t)])
 ;;
 
@@ -50,7 +50,7 @@ let sampling_markets =
     ~summary:"Get markets that have rewards enabled"
     (let%map_open.Command () = Command.Param.return () in
      fun () ->
-       let%map market_list = Sampling_markets.query () in
+       let%map market_list = Clob.sampling_markets () in
        List.iter market_list ~f:(fun market ->
          print_s [%sexp (market : Market.t)]))
 ;;
