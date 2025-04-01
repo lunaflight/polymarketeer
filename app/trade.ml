@@ -62,12 +62,7 @@ let view =
   Command.async
     ~summary:"View state of ledger"
     (let%map_open.Command verbose =
-       flag_optional_with_default_doc
-         "-v"
-         bool
-         sexp_of_bool
-         ~default:false
-         ~doc:"BOOL get extra information"
+       flag "-verbose" no_arg ~doc:"get extra information"
      in
      fun () ->
        let%bind ledger =
