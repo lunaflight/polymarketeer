@@ -57,7 +57,7 @@ let sampling_markets =
 
 let cmd =
   Command.group
-    ~summary:"Request APIs of Polymarket"
+    ~summary:"Request CLOB APIs of Polymarket"
     [ "get-book", get_book
     ; "get-market", get_market
     ; "get-price", get_price
