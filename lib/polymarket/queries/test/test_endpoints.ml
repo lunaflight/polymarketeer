@@ -54,3 +54,13 @@ let%expect_test "starting next cursor = url either has empty next_cursor or no \
   sampling_markets_uri_and_print ~next_cursor:Next_cursor.start;
   [%expect {| https://clob.polymarket.com/sampling-markets?next_cursor= |}]
 ;;
+
+let search_uri_and_print ~search_term =
+  Endpoint.search ~search_term |> Endpoint.to_string |> print_string
+;;
+
+let%expect_test "url ok" =
+  search_uri_and_print ~search_term:"search term";
+  [%expect
+    {| https://polymarket.com/api/events/global?q=search%20term&events_status=active |}]
+;;

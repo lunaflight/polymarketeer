@@ -5,7 +5,7 @@ let api_cmd =
   Command.group
     ~summary:"Request APIs of Polymarket"
     [ "clob", Clob.cmd
-      (* TODO-soon: Add the web endpoint as well as the stitched endpoints. *)
+    ; "web", Web.cmd (* TODO-soon: Add the stitched endpoints. *)
     ]
 ;;
 

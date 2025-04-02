@@ -6,6 +6,7 @@ open Polymarket_types
 
 let get_book ~token_id =
   let%map json = Endpoint.send_request (Endpoint.book ~token_id) in
+  let open Yojson.Basic.Util in
   Orderbook.of_json
     json
     ~market_key:"market"
@@ -15,7 +16,7 @@ let get_book ~token_id =
       ( "timestamp"
       , fun json ->
           (* The json is expressed as milliseconds after epoch in a string. *)
-          Yojson.Basic.Util.to_string json
+          to_string json
           |> Float.of_string
           |> Time_float_unix.Span.of_ms
           |> Time_float.of_span_since_epoch )
@@ -29,20 +30,19 @@ let get_book ~token_id =
 
 let get_market ~condition_id =
   let%map json = Endpoint.markets ~condition_id |> Endpoint.send_request in
+  let open Yojson.Basic.Util in
   Market.of_json
     json
     ~closed_key:"closed"
     ~condition_id_key:"condition_id"
     ~description_key:"description"
     ~end_date:
-      ( "end_date_iso"
-      , fun json ->
-          Yojson.Basic.Util.to_string json |> Time_float_unix.of_string )
-    ~icon:("icon", fun json -> Yojson.Basic.Util.to_string json |> Uri.of_string)
+      ("end_date_iso", fun json -> to_string json |> Time_float_unix.of_string)
+    ~icon:("icon", fun json -> to_string json |> Uri.of_string)
     ~question_key:"question"
     ~tokens:
       ( "tokens"
-      , Yojson.Basic.Util.convert_each
+      , convert_each
           (Token.of_json ~token_id_key:"token_id" ~outcome_key:"outcome") )
 ;;
 
@@ -50,7 +50,8 @@ let get_price ~token_id ~side_of_dealer =
   let%map json =
     Endpoint.send_request (Endpoint.price ~token_id ~side:side_of_dealer)
   in
-  Yojson.Basic.Util.member "price" json |> Dollar.of_json_string
+  let open Yojson.Basic.Util in
+  member "price" json |> Dollar.of_json_string
 ;;
 
 let sampling_markets () =
@@ -64,30 +65,24 @@ let sampling_markets () =
       let%bind json =
         Endpoint.send_request (Endpoint.sampling_markets ~next_cursor)
       in
-      let next_cursor =
-        Yojson.Basic.Util.member "next_cursor" json |> Next_cursor.of_json
-      in
+      let open Yojson.Basic.Util in
+      let next_cursor = member "next_cursor" json |> Next_cursor.of_json in
       let markets =
         json
-        |> Yojson.Basic.Util.member "data"
-        |> Yojson.Basic.Util.convert_each
+        |> member "data"
+        |> convert_each
              (Market.of_json
                 ~closed_key:"closed"
                 ~condition_id_key:"condition_id"
                 ~description_key:"description"
                 ~end_date:
                   ( "end_date_iso"
-                  , fun json ->
-                      Yojson.Basic.Util.to_string json
-                      |> Time_float_unix.of_string )
-                ~icon:
-                  ( "icon"
-                  , fun json ->
-                      Yojson.Basic.Util.to_string json |> Uri.of_string )
+                  , fun json -> to_string json |> Time_float_unix.of_string )
+                ~icon:("icon", fun json -> to_string json |> Uri.of_string)
                 ~question_key:"question"
                 ~tokens:
                   ( "tokens"
-                  , Yojson.Basic.Util.convert_each
+                  , convert_each
                       (Token.of_json
                          ~token_id_key:"token_id"
                          ~outcome_key:"outcome") ))

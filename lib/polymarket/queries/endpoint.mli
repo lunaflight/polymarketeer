@@ -8,7 +8,6 @@ open Polymarket_types
 type t
 
 val to_string : t -> string
-val clob_endpoint : t
 
 (** Returns the endpoint for order book summary for a market.
     See: https://docs.polymarket.com/#get-book. *)
@@ -25,6 +24,12 @@ val price : token_id:Token.Id.t -> side:Side.t -> t
 (** Returns the endpoint for markets that have rewards enabled.
     See: https://docs.polymarket.com/#get-sampling-markets. *)
 val sampling_markets : next_cursor:Next_cursor.t -> t
+
+(** Returns the endpoint for markets given a search term.
+    [events_status] is [active], as equivalent to Polymarket.
+    See the [Network] tab when typing a search term in
+    https://polymarket.com/. *)
+val search : search_term:string -> t
 
 (** Returns the JSON body after sending a HTTP GET request to the
     endpoint. *)

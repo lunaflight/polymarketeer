@@ -10,7 +10,11 @@ module Id : sig
   include Comparable.S with type t := t
 end
 
-type t [@@deriving sexp]
+type t =
+  { token_id : Id.t
+  ; outcome : string
+  }
+[@@deriving sexp]
 
 val token_id : t -> Id.t
 val outcome : t -> string
