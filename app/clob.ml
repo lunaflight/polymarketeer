@@ -43,8 +43,6 @@ let get_price =
        print_s [%sexp (price : Dollar.t)])
 ;;
 
-(* TODO-soon: This command should take filter options to make it more
-   browseable. *)
 let sampling_markets =
   Command.async
     ~summary:"Get markets that have rewards enabled"

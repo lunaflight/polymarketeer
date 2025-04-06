@@ -4,9 +4,7 @@ open! Async
 let api_cmd =
   Command.group
     ~summary:"Request APIs of Polymarket"
-    [ "clob", Clob.cmd
-    ; "web", Web.cmd (* TODO-soon: Add the stitched endpoints. *)
-    ]
+    [ "clob", Clob.cmd; "stitched", Stitched.cmd; "web", Web.cmd ]
 ;;
 
 let entrypoint =
